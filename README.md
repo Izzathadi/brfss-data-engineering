@@ -6,11 +6,9 @@ BRFSS Data Engineering is an end-to-end ELT and analytics pipeline for the Behav
 
 ## 📊 Dashboard Preview
 
-*You can add your dashboard screenshot here:*
-
-```
-<img src="images/dashboard.png" alt="Dashboard Preview" width="500"/>
-```
+<p align="center">
+  <img src="images/dashboard.png" alt="Dashboard Preview" width="500"/>
+</p>
 
 ---
 
@@ -126,16 +124,6 @@ prefect deployment run 'etl-pipeline/brfss-yearly'
 
 After the ELT process is complete, the dashboard will be available at [http://localhost:8050](http://localhost:8050):
 
-```bash
-python -m src.visualization.app
-```
-
----
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
 ---
 
 ## References
@@ -144,3 +132,10 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 - [Prefect Documentation](https://docs.prefect.io/)
 - [Dash by Plotly](https://dash.plotly.com/)
 - [Pandera](https://pandera.readthedocs.io/)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
