@@ -1,0 +1,39 @@
+standard_features:
+  Diabetes_01:
+    - DIABETE3
+    - DIABETE4
+
+  HighBP:
+    - _RFHYPE5
+    - _RFHYPE6
+
+  HighChol:
+    - TOLDHI2
+    - TOLDHI3
+
+  BMI:
+    - _BMI5
+
+  Smoker:
+    - SMOKE100
+
+  PhysActivity:
+    - _TOTINDA
+
+  Fruits:
+    - _FRTLT1A
+    - _FRTLT1
+
+  Veggies:
+    - _VEGLT1A
+    - _VEGLT1
+
+  DiffWalk:
+    - DIFFWALK
+
+  Sex:
+    - SEXVAR
+    - SEX
+
+  Age:
+    - _AGEG5YR

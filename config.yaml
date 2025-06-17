@@ -1,0 +1,5 @@
+dataset:
+  start_year: 2015
+  url_template: "https://www.cdc.gov/brfss/annual_data/{year}/files/LLCP{year}XPT.zip"
+  raw_dir: "data/raw/"
+  processed_dir: "data/processed/"

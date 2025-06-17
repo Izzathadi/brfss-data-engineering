@@ -1,0 +1,14 @@
+pandas
+pyreadstat
+prefect
+great_expectations
+duckdb
+requests
+tqdm
+scikit-learn
+pyarrow
+pandera
+plotly
+dash
+kaleido
+dash-bootstrap-components

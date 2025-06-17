@@ -1,0 +1,32 @@
+# prefect.yaml
+name: brfss-etl
+prefect-version: 2.19.0
+
+# build section defines how to prepare your code for deployment
+build: null
+
+# push section defines how to push your code to a remote location
+push: null
+
+# pull section defines how to retrieve your code at runtime
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: .
+
+# deployments section defines your flow deployments
+deployments:
+  - name: brfss-yearly
+    version: null
+    tags:
+      - brfss
+      - diabetes
+      - etl
+    description: "BRFSS Diabetes ETL Pipeline - runs annually"
+    schedule:
+      cron: "0 0 1 1 *"
+      timezone: "Asia/Jakarta"
+    flow_name: "ETL Flow - BRFSS Diabetes"
+    entrypoint: "src/flow/pipeline.py:etl_pipeline"
+    parameters: {}
+    work_pool:
+      name: "my-work-pool"

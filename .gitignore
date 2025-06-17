@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Prefect cache and logs
+*.prefect/
+logs/
+*.log
+
+# Data files
+data/
+data/raw/
+data/processed/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.venv/
+venv/
+env/
+*.env
+
+# Parquet and other intermediate files
+*.parquet
+
+# VSCode settings
+.vscode/
+
+# Python egg and wheel files
+*.egg-info/
+*.egg
+*.whl
+
+# Test output
+htmlcov/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Misc
+*.bak
+*.swp
+*.tmp
