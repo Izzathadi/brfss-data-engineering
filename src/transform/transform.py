@@ -9,8 +9,7 @@ from glob import glob
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, PowerTransformer
 from src.transform.schema import diabetes_schema
 from prefect import task, get_run_logger
-
-# === Supporting Functions (tetap fungsional) ===
+from scipy.stats import skew
 
 def load_feature_mapping(config_path):
     with open(config_path, 'r') as f:
@@ -81,16 +80,26 @@ def scale_features(df, columns, method='minmax'):
     df[columns] = scaler.fit_transform(df[columns])
     return df
 
-def transform_numerical_features(df, columns, method):
-    if method == 'log':
-        df[columns] = np.log(df[columns] + 1)  # Menambahkan 1 untuk menghindari log(0)
-    
-    elif method in ['box-cox', 'yeo-johnson']:
-        transformer = PowerTransformer(method=method)
-        df[columns] = transformer.fit_transform(df[columns])
-    
-    else:
-        raise ValueError("Metode tidak dikenali. Pilih antara 'log', 'box-cox', atau 'yeo-johnson'.")
+def transform_numerical_features(df, columns, method, skew_threshold=0.75):
+    # Cek skewness untuk setiap kolom
+    for column in columns:
+        column_skew = skew(df[column].dropna())
+        
+        # Jika skewness lebih besar dari threshold, lakukan transformasi
+        if abs(column_skew) > skew_threshold:
+            print(f"Skewness untuk kolom {column}: {column_skew}. Melakukan transformasi...")
+
+            if method == 'log':
+                df[column] = np.log(df[column] + 1)  # Menambahkan 1 untuk menghindari log(0)
+            
+            elif method in ['box-cox', 'yeo-johnson']:
+                transformer = PowerTransformer(method=method)
+                df[column] = transformer.fit_transform(df[[column]])
+            
+            else:
+                raise ValueError("Metode tidak dikenali. Pilih antara 'log', 'box-cox', atau 'yeo-johnson'.")
+        else:
+            print(f"Skewness untuk kolom {column}: {column_skew}. Tidak melakukan transformasi.")
     
     return df
 
@@ -103,24 +112,28 @@ def transform_dataset(input_path, feature_map_path, output_path, year, log_file_
     df, missing_features = select_and_rename_columns(df, feature_map)
 
     if missing_features:
+        msg = f"❌ Fitur tidak lengkap untuk {year}: {sorted(list(missing_features))}"
         with open(log_file_path, 'a') as log_file:
-            log_file.write(f"BRFSS{year}: fitur tidak ditemukan: {sorted(list(missing_features))}\n")
-        raise KeyError(f"❌ Fitur tidak lengkap untuk {year}: {missing_features}")
+            log_file.write(f"{msg}\n")
+        logger.error(msg)
+        return
     else:
         with open(log_file_path, 'a') as log_file:
             log_file.write(f"BRFSS{year}: fitur lengkap\n")
 
     df = encode(df)
 
-    target_counts = {0.0: 50000, 1.0: df['Diabetes_01'].value_counts().get(1.0, 0)}
+    target_counts = {0.0: 70000, 1.0: df['Diabetes_01'].value_counts().get(1.0, 0)}
     df = undersampling(df, target_counts)
 
     bounds = compute_iqr_bounds(df, ['BMI'])
     df = apply_iqr_clipping(df, ['BMI'], bounds)
 
     df = transform_numerical_features(df, ['BMI'], method='box-cox')
-    
+
     df = scale_features(df, ['BMI'], method='standard')
+
+    df = df.drop_duplicates()
 
     try:
         diabetes_schema.validate(df, lazy=True)
@@ -135,9 +148,6 @@ def transform_dataset(input_path, feature_map_path, output_path, year, log_file_
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_parquet(output_path, index=False)
     logger.info(f"📁 Disimpan: {output_path}")
-
-
-# === Manual Entry Point (Optional) ===
 
 if __name__ == "__main__":
     with open("config.yaml", "r") as f:
@@ -159,4 +169,4 @@ if __name__ == "__main__":
             continue
         year = match.group(1)
         output_file = os.path.join(processed_dir, f"diabetes_01_health_indicators_BRFSS{year}.parquet")
-        transform_dataset.fn(file_path, feature_map_path, output_file, year, log_file_path)  # .fn() to run like normal
+        transform_dataset.fn(file_path, feature_map_path, output_file, year, log_file_path)
