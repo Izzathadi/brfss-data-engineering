@@ -8,7 +8,7 @@ from prefect import flow, get_run_logger, task
 
 from src.extract.extract import load_config, extract_dataset
 from src.transform.transform import transform_dataset
-from src.visualization.static_charts import save_static_charts
+# from src.visualization.static_charts import save_static_charts
 
 def get_latest_year(raw_dir):
     files = os.listdir(raw_dir)
@@ -26,54 +26,36 @@ def run_dash_server():
     Fungsi ini dirancang untuk portabilitas, memungkinkan project dijalankan dari direktori manapun.
     """
     try:
-        # 1. Menentukan root proyek secara dinamis untuk portabilitas
-        # Path(__file__) -> /home/izzat/projects/capstone-data-engineering/src/flow/pipeline.py
-        # .parent.parent.parent -> /home/izzat/projects/capstone-data-engineering/
         project_root = Path(__file__).parent.parent.parent 
-        
-        # 2. Menentukan jalur absolut ke direktori visualisasi
-        # Dari project_root, masuk ke src/visualization
         viz_dir = project_root / "src" / "visualization"
         app_path = viz_dir / "app.py"
-        
-        # 3. Memeriksa apakah file app.py ada
+
         if not app_path.exists():
             raise FileNotFoundError(f"Dashboard app not found at: {app_path}")
         
         print("Starting BRFSS Diabetes Dashboard...")
         print(f"Dashboard will be available at: http://localhost:8050")
         print("Press Ctrl+C to stop the dashboard")
-        
-        # 4. Menjalankan dashboard sebagai modul Python
-        # Menggunakan `-m` memungkinkan Python untuk menemukan modul di dalam struktur paket
-        # `src.visualization.app` adalah jalur modul relatif terhadap project_root
-        # `cwd=project_root` mengatur direktori kerja untuk subprocess ke root proyek,
-        # sehingga `src` dapat ditemukan sebagai paket level atas.
+
         process = subprocess.Popen([
             sys.executable, "-m", "src.visualization.app" 
-        ], cwd=project_root) # Penting: Atur CWD ke root proyek
-        
-        # 5. Menunggu proses selesai atau diinterupsi
+        ], cwd=project_root)
+
         try:
-            process.wait() # Menunggu subprocess selesai
+            process.wait()
         except KeyboardInterrupt:
-            # Menangani interupsi keyboard (Ctrl+C) untuk mematikan dashboard
             print("\nShutting down dashboard...")
-            process.terminate() # Mengirim sinyal TERM ke subprocess
-            process.wait()      # Menunggu subprocess benar-benar berhenti
+            process.terminate()
+            process.wait()
         finally:
-            # Tidak perlu lagi mengubah kembali CWD, karena CWD aplikasi utama tidak diubah.
-            # Subprocess memiliki CWD-nya sendiri.
             pass
             
     except FileNotFoundError as fnfe:
-        # Penanganan khusus untuk FileNotFoundError
         print(f"ERROR: {fnfe}")
-        raise # Meneruskan exception agar Prefect atau sistem lain dapat menanganinya
+        raise
     except Exception as e:
-        # Penanganan umum untuk error lainnya selama menjalankan dashboard
         print(f"ERROR running dashboard: {e}")
-        raise # Meneruskan exception
+        raise
 
 @task
 def setup_dashboard_environment():
@@ -88,7 +70,6 @@ def setup_dashboard_environment():
         from scipy.stats import gaussian_kde
         print("✓ All dashboard dependencies are available")
         
-        # Check if processed data directory exists
         processed_dir = Path("data/processed")
         if not processed_dir.exists():
             print(f"⚠️  Warning: Processed data directory not found: {processed_dir}")
@@ -105,9 +86,9 @@ def setup_dashboard_environment():
         print("Please install required packages: pip install dash plotly pandas numpy scipy")
         raise
 
-@task
-def generate_static_visualizations(processed_dir: str):
-    save_static_charts(processed_dir)
+# @task
+# def generate_static_visualizations(processed_dir: str):
+#     save_static_charts(processed_dir)
 
 @flow
 def etl_pipeline(config_path: str = "config.yaml"):
