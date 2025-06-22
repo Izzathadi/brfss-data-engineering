@@ -1,7 +1,6 @@
 pandas
 pyreadstat
 prefect
-great_expectations
 duckdb
 requests
 tqdm
