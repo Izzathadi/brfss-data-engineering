@@ -91,7 +91,7 @@ def setup_dashboard_environment():
 #     save_static_charts(processed_dir)
 
 @flow
-def etl_pipeline(config_path: str = "config.yaml"):
+def elt_pipeline(config_path: str = "config.yaml"):
     logger = get_run_logger()
 
     # 1. Load Config
@@ -112,7 +112,7 @@ def etl_pipeline(config_path: str = "config.yaml"):
     start_year = (latest + 1) if latest else config["dataset"]["start_year"]
     year = start_year
 
-    logger.info(f"🚀 Memulai ETL dari tahun: {year}")
+    logger.info(f"🚀 Memulai ELT dari tahun: {year}")
 
     # 2. Extract & Transform Loop
     while True:
@@ -153,4 +153,4 @@ def etl_pipeline(config_path: str = "config.yaml"):
     run_dash_server()
 
 if __name__ == "__main__":
-    etl_pipeline()
+    elt_pipeline()

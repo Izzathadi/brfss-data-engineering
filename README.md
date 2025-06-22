@@ -114,7 +114,7 @@ prefect deploy
 Then run the deployment:
 
 ```bash
-prefect deployment run 'etl-pipeline/brfss-yearly'
+prefect deployment run 'elt-pipeline/brfss-yearly'
 ```
 
 - Processed data will be saved in `data/processed/`.

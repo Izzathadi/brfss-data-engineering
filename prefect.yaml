@@ -1,5 +1,5 @@
 # prefect.yaml
-name: brfss-etl
+name: brfss-elt
 prefect-version: 2.19.0
 
 # build section defines how to prepare your code for deployment
@@ -11,7 +11,17 @@ push: null
 # pull section defines how to retrieve your code at runtime
 pull:
   - prefect.deployments.steps.set_working_directory:
+      #fill with the directory where your project root is located or use `.` for the current directory
       directory: .
+
+# alternatively, you can use git to pull your code from a repository
+# Uncomment the following lines to enable git pull
+# pull:
+#   - prefect.deployments.steps.git_clone:
+#       repository: https://github.com/Izzathadi/brfss-data-engineering.git
+#       branch: "main"
+#   - prefect.deployments.steps.set_working_directory:
+#       directory: .
 
 # deployments section defines your flow deployments
 deployments:
@@ -20,13 +30,13 @@ deployments:
     tags:
       - brfss
       - diabetes
-      - etl
-    description: "BRFSS Diabetes ETL Pipeline - runs annually"
+      - elt
+    description: "BRFSS Diabetes ELT Pipeline - runs annually"
     schedule:
       cron: "0 0 1 1 *"
       timezone: "Asia/Jakarta"
-    flow_name: "ETL Flow - BRFSS Diabetes"
-    entrypoint: "src/flow/pipeline.py:etl_pipeline"
+    flow_name: "ELT Flow - BRFSS Diabetes"
+    entrypoint: "src/flow/pipeline.py:elt_pipeline"
     parameters: {}
     work_pool:
       name: "my-work-pool"
