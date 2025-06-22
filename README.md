@@ -1,6 +1,6 @@
 # BRFSS Data Engineering Pipeline
 
-BRFSS Data Engineering is an end-to-end ELT and analytics pipeline for the Behavioral Risk Factor Surveillance System (BRFSS) dataset, focusing on diabetes and related health indicators. This project automates data extraction, transformation, validation, and visualization, providing both static and interactive dashboards for health data analysis.
+BRFSS Data Engineering is an end-to-end ELT and analytics pipeline for the Behavioral Risk Factor Surveillance System (BRFSS) dataset, focusing on diabetes classification detection. This project automates data extraction, transformation, validation, and visualization, providing interactive dashboards for data analysis.
 
 ---
 
@@ -14,10 +14,9 @@ BRFSS Data Engineering is an end-to-end ELT and analytics pipeline for the Behav
 
 ## Features
 
-- **Automated ELT Pipeline**: Download, extract, and process BRFSS data for multiple years.
+- **Automated ELT Pipeline**: Download, extract, store, and process BRFSS data for multiple years using [Prefect](https://www.prefect.io/) with scheduling.
 - **Data Validation**: Schema validation using [Pandera](https://pandera.readthedocs.io/).
 - **Interactive Dashboard**: Explore trends, distributions, and correlations with [Dash](https://dash.plotly.com/).
-- **Static Visualizations**: Automatically generated PNG charts for reporting.
 - **Configurable**: Easily adjust years, features, and data sources via `config.yaml`.
 
 ---
@@ -27,35 +26,48 @@ BRFSS Data Engineering is an end-to-end ELT and analytics pipeline for the Behav
 ```
 brfss-data-engineering/
 │
-├── config.yaml                # Main configuration file
-├── prefect.yaml               # Prefect deployment configuration
-├── requirements.txt           # Python dependencies
-├── .gitignore
-├── README.md
+├── README.md                   # Project documentation
+├── config.yaml                 # Main pipeline configuration (years, dirs, URLs)
+├── prefect.yaml                # Prefect deployment and scheduling config
+├── requirements.txt            # Python dependencies
 │
 ├── data/
-│   ├── raw/                   # Downloaded raw .XPT files
-│   └── processed/             # Processed .parquet files
+│   ├── raw/                    # Downloaded raw BRFSS .XPT files
+│   └── processed/              # Processed .parquet files
 │
-├── logs/                      # ELT and validation logs
+├── images/
+│   └── dashboard.png           # Dashboard preview image
 │
-├── src/
-│   ├── extract/               # Data extraction scripts
-│   ├── transform/             # Data transformation & validation
-│   ├── flow/                  # Prefect flows and pipeline
-│   └── visualization/         # Dash app and chart utilities
+├── logs/
+│   ├── missing_features.log    # Log of missing features during transform
+│   └── validation_summary.log  # Data validation summary log
 │
-└── visualizations/            # Static PNG charts (auto-generated)
-```
+└── src/
+    ├── __init__.py             # Marks src as a Python package
+    ├── extract/
+    │   └── extract.py          # Download, extract, and config loading functions
+    ├── flow/
+    │   └── pipeline.py         # Main Prefect ELT pipeline and dashboard runner
+    ├── transform/
+    │   ├── transform.py        # Data cleaning, feature engineering, validation
+    │   ├── schema.py           # Pandera schema for data validation
+    │   └── feature_map.yaml    # Feature mapping for column selection/renaming
+    └── visualization/
+        ├── app.py              # Dash app entrypoint
+        ├── charts.py           # Chart/figure generation functions
+        ├── config.py           # Dashboard config (title, port, features)
+        ├── data_loader.py      # Load processed data for dashboard
+        ├── layout.py           # Dashboard layout and UI components
+        └── utils.py            # Functions for statistics, formatting, and dashboard utilities
 
----
+```
 
 ## Getting Started
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/brfss-data-engineering.git
+git clone https://github.com/Izzathadi/brfss-data-engineering.git
 cd brfss-data-engineering
 ```
 
@@ -95,12 +107,14 @@ In a new terminal, set the Prefect API URL:
 prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
 ```
 
-### 5. Create and Start Prefect Worker
+Monitoring the Prefect dashboard at [http://127.0.0.1:4200/dashboard](http://127.0.0.1:4200/dashboard):
 
-Create a Prefect worker (if not already created), then start it:
+### 5. Create a Prefect Worker
+
+Create a Prefect worker (if not already created):
 
 ```bash
-prefect worker start --pool "my-work-pool"
+prefect work-pool create --type process "my-work-pool"
 ```
 
 ### 6. Deploy and Run the ELT Pipeline
@@ -109,6 +123,12 @@ Deploy the pipeline:
 
 ```bash
 prefect deploy
+```
+
+Start the work-pool:
+
+```bash
+prefect worker start --pool "my-work-pool"
 ```
 
 Then run the deployment:
