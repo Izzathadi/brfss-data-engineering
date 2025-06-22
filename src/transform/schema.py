@@ -2,6 +2,9 @@ import pandera.pandas as pa
 from pandera.pandas import Column, DataFrameSchema
 from pandera import Check
 
+def check_no_duplicate_rows(df):
+    return not df.duplicated().any()
+
 diabetes_schema = DataFrameSchema({
     "Diabetes_01": Column(int, Check.isin([0, 1])),
     "HighBP": Column(int, Check.isin([0, 1])),
@@ -21,4 +24,4 @@ diabetes_schema = DataFrameSchema({
     "DiffWalk": Column(int, Check.isin([0, 1])),
     "Sex": Column(int, Check.isin([0, 1])),
     "Age": Column(int, Check.ge(0))
-})
+}, checks=[Check(check_no_duplicate_rows, error="Duplicate rows found!")])
