@@ -10,15 +10,15 @@ DASHBOARD_PORT = 8050
 # Feature configurations
 BINARY_FEATURES = ["HighBP", "HighChol", "Smoker", "PhysActivity", "Fruits", "Veggies", "DiffWalk"]
 
-# Feature descriptions (you can edit these)
+# Feature descriptions in Indonesian
 FEATURE_DESCRIPTIONS = {
-    "HighBP": "High Blood Pressure - Indicates whether respondent has been told they have high blood pressure by a doctor",
-    "HighChol": "High Cholesterol - Indicates whether respondent has been told they have high cholesterol by a doctor", 
-    "Smoker": "Smoking Status - Indicates whether respondent has smoked at least 100 cigarettes in their entire life",
-    "PhysActivity": "Physical Activity - Indicates whether respondent had physical activity in past 30 days",
-    "Fruits": "Fruit Consumption - Indicates whether respondent consumes fruit 1 or more times per day",
-    "Veggies": "Vegetable Consumption - Indicates whether respondent consumes vegetables 1 or more times per day",
-    "DiffWalk": "Difficulty Walking - Indicates whether respondent has serious difficulty walking or climbing stairs"
+    "HighBP": "Tekanan Darah Tinggi - Menunjukkan apakah responden pernah diberitahu oleh dokter bahwa mereka memiliki tekanan darah tinggi",
+    "HighChol": "Kolesterol Tinggi - Menunjukkan apakah responden pernah diberitahu oleh dokter bahwa mereka memiliki kolesterol tinggi", 
+    "Smoker": "Status Merokok - Menunjukkan apakah responden pernah merokok setidaknya 100 batang rokok dalam hidupnya",
+    "PhysActivity": "Aktivitas Fisik - Menunjukkan apakah responden melakukan aktivitas fisik dalam 30 hari terakhir",
+    "Fruits": "Konsumsi Buah - Menunjukkan apakah responden mengonsumsi buah 1 kali atau lebih per hari",
+    "Veggies": "Konsumsi Sayuran - Menunjukkan apakah responden mengonsumsi sayuran 1 kali atau lebih per hari",
+    "DiffWalk": "Kesulitan Berjalan - Menunjukkan apakah responden memiliki kesulitan serius dalam berjalan atau menaiki tangga"
 }
 
 # Age category descriptions (you can edit these)
@@ -38,26 +38,26 @@ AGE_DESCRIPTIONS = {
     13: "13: Age 80+ (Elderly)"
 }
 
-# Styling configurations
-DARK_THEME = {
-    'backgroundColor': '#1e1e1e',
-    'color': '#ffffff',
+# Styling configurations - LIGHT THEME
+LIGHT_THEME = {
+    'backgroundColor': '#ffffff',
+    'color': '#000000',
     'fontFamily': 'Arial, sans-serif'
 }
 
 CARD_STYLE = {
-    'backgroundColor': '#2d2d2d',
-    'border': '1px solid #444',
+    'backgroundColor': '#ffffff',
+    'border': '1px solid #ddd',
     'borderRadius': '8px',
     'padding': '20px',
     'margin': '10px 0',
-    'boxShadow': '0 2px 4px rgba(0,0,0,0.3)'
+    'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
 }
 
 CONTAINER_STYLE = {
-    'backgroundColor': '#1e1e1e',
+    'backgroundColor': '#f8f9fa',
     'minHeight': '100vh',
     'padding': '20px 150px',
-    'color': '#ffffff',
+    'color': '#000000',
     'fontFamily': 'Arial, sans-serif'
 }

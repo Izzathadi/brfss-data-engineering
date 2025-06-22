@@ -1,20 +1,44 @@
 # src/visualization/app.py
 
-from dash import Dash, Input, Output
+from dash import Dash, Input, Output, html
 from .data_loader import load_data, get_available_years
-from .layout import create_main_layout, format_bmi_statistics_table
+from .layout import create_main_layout, format_bmi_statistics_table, format_data_statistics_table
 from .charts import (
     create_diabetes_trend_chart,
     create_binary_features_chart,
     create_sex_pie_chart,
     create_age_pie_chart,
     create_bmi_density_chart,
-    create_correlation_heatmap
+    create_correlation_heatmap,
+    create_data_statistics_table,
+    create_diabetes_comparison_chart
 )
-from .config import DASHBOARD_TITLE, DASHBOARD_PORT
+from .config import DASHBOARD_TITLE, DASHBOARD_PORT, CONTAINER_STYLE
+import dash
+
+app = dash.Dash(__name__)
+
+app.index_string = """
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body style="background-color: #f8f9fa;">
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+"""
 
 # Initialize the Dash app
-app = Dash(__name__)
 app.title = DASHBOARD_TITLE
 
 # Load data
@@ -36,11 +60,10 @@ else:
 
 def create_error_layout():
     """Create an error layout when data cannot be loaded."""
-    from layout import CONTAINER_STYLE
     return html.Div([
         html.H1("❌ Error Loading Dashboard", style={'textAlign': 'center', 'color': 'red'}),
         html.P("Could not load BRFSS data. Please check if the data files exist in the processed directory.",
-               style={'textAlign': 'center', 'color': 'white', 'fontSize': '1.2em'})
+               style={'textAlign': 'center', 'color': 'black', 'fontSize': '1.2em'})
     ], style=CONTAINER_STYLE)
 
 # Callback for diabetes trend chart
@@ -53,6 +76,30 @@ def update_diabetes_trend(_):
     if df is None:
         return {}
     return create_diabetes_trend_chart(df)
+
+# NEW: Callback for data statistics table
+@app.callback(
+    Output("data-stats-table", "children"),
+    Input("year-dropdown", "value")
+)
+def update_data_statistics(year):
+    """Update data statistics table for selected year."""
+    if df is None or year is None:
+        return "No data available"
+    
+    stats = create_data_statistics_table(df, year)
+    return format_data_statistics_table(stats)
+
+# NEW: Callback for diabetes comparison bar chart
+@app.callback(
+    Output("diabetes-comparison-graph", "figure"),
+    Input("year-dropdown", "value")
+)
+def update_diabetes_comparison(year):
+    """Update diabetes comparison bar chart for selected year."""
+    if df is None or year is None:
+        return {}
+    return create_diabetes_comparison_chart(df, year)
 
 # Callback for binary features distribution
 @app.callback(
